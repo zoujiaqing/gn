@@ -170,10 +170,9 @@ class Target : public Item {
   // Returns true if targets depending on this one should have an order
   // dependency.
   bool hard_dep() const {
-    return output_type_ == ACTION ||
-           output_type_ == ACTION_FOREACH ||
-           output_type_ == COPY_FILES ||
-           output_type_ == CREATE_BUNDLE;
+    return output_type_ == ACTION || output_type_ == ACTION_FOREACH ||
+           output_type_ == COPY_FILES || output_type_ == CREATE_BUNDLE ||
+           output_type_ == BUNDLE_DATA;
   }
 
   // Returns the iterator range which can be used in range-based for loops
@@ -243,9 +242,10 @@ class Target : public Item {
     return recursive_hard_deps_;
   }
 
-  std::vector<LabelPattern>& assert_no_deps() {
-    return assert_no_deps_;
-  }
+  std::vector<LabelPattern>& friends() { return friends_; }
+  const std::vector<LabelPattern>& friends() const { return friends_; }
+
+  std::vector<LabelPattern>& assert_no_deps() { return assert_no_deps_; }
   const std::vector<LabelPattern>& assert_no_deps() const {
     return assert_no_deps_;
   }
@@ -374,6 +374,7 @@ class Target : public Item {
   // target is marked resolved. This will not include the current target.
   std::set<const Target*> recursive_hard_deps_;
 
+  std::vector<LabelPattern> friends_;
   std::vector<LabelPattern> assert_no_deps_;
 
   // Used for all binary targets, and for inputs in regular targets. The
